@@ -13,7 +13,7 @@ bool isPrerelease = false;
 GitVersion versionInfo = null;
 
 var projectsToBuild = new string[]{
-    "./src/Cofoundry.Core/Cofoundry.Plugins.Imaging.ImageSharp.csproj",
+    "./src/Cofoundry.Plugins.Imaging.ImageSharp/Cofoundry.Plugins.Imaging.ImageSharp.csproj",
 };
 
 
