@@ -109,7 +109,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                                 {
                                     imageFile.Save(outputStream);
                                 }
-                                CreateFile(isNew, fileName, outputStream);
+                                await CreateFileAsync(isNew, fileName, outputStream);
                                 // recalculate size and save
                                 imageAsset.FileSize = Convert.ToInt32(outputStream.Length);
                                 await _dbContext.SaveChangesAsync();
@@ -118,7 +118,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                         else
                         {
                             // Save the raw file directly
-                            CreateFile(isNew, fileName, inputSteam);
+                            await CreateFileAsync(isNew, fileName, inputSteam);
                         }
 
                         scope.Complete();
@@ -127,15 +127,15 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             }
         }
 
-        private void CreateFile(bool isNew, string fileName, Stream outputStream)
+        private Task CreateFileAsync(bool isNew, string fileName, Stream outputStream)
         {
             if (isNew)
             {
-                _fileStoreService.Create(ASSET_FILE_CONTAINER_NAME, fileName, outputStream);
+                return  _fileStoreService.CreateAsync(ASSET_FILE_CONTAINER_NAME, fileName, outputStream);
             }
             else
             {
-                _fileStoreService.CreateOrReplace(ASSET_FILE_CONTAINER_NAME, fileName, outputStream);
+                return _fileStoreService.CreateOrReplaceAsync(ASSET_FILE_CONTAINER_NAME, fileName, outputStream);
             }
         }
     }

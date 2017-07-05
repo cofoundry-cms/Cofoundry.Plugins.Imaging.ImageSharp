@@ -60,9 +60,9 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             Stream imageStream = null;
             ValidateSettings(inputSettings);
 
-            if (_fileService.Exists(IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName))
+            if (await _fileService.ExistsAsync(IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName))
             {
-                return _fileService.Get(IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName);
+                return await _fileService.GetAsync(IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                 try
                 {
                     // Try and create the cache file, but don't throw an error if it fails - it will be attempted again on the next request
-                    _fileService.CreateIfNotExists(IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName, imageStream);
+                    await _fileService.CreateIfNotExistsAsync(IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName, imageStream);
                 }
                 catch (Exception ex)
                 {
@@ -105,10 +105,10 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             }
         }
 
-        public void Clear(int imageAssetId)
+        public Task ClearAsync(int imageAssetId)
         {
             var directory = imageAssetId.ToString();
-            _fileService.DeleteDirectory(IMAGE_ASSET_CACHE_CONTAINER_NAME, directory);
+            return _fileService.DeleteDirectoryAsync(IMAGE_ASSET_CACHE_CONTAINER_NAME, directory);
         }
 
         #region private methods
