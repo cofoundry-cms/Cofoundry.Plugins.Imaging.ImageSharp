@@ -9,6 +9,11 @@
     <PackageTags>Cofoundry Plugin Imaging ImageSharp ImageResizing</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.6\Cofoundry.Plugins.Imaging.ImageSharp.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Cofoundry.Domain" Version="0.2.0-beta0116" />
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00152" />
