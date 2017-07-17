@@ -1,5 +1,4 @@
-﻿using Cofoundry.Core.ErrorLogging;
-using Cofoundry.Domain;
+﻿using Cofoundry.Domain;
 using Cofoundry.Domain.CQS;
 using Cofoundry.Domain.Data;
 using System;
@@ -12,6 +11,7 @@ using ImageSharp.Processing;
 using System.Diagnostics;
 using System.Net;
 using SixLabors.Primitives;
+using Microsoft.Extensions.Logging;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp
 {
@@ -28,7 +28,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
 
         private readonly IFileStoreService _fileService;
         private readonly IQueryExecutor _queryExecutor;
-        private readonly IErrorLoggingService _errorLoggingService;
+        private readonly ILogger<ImageSharpResizedImageAssetFileService> _logger;
 
         #endregion
 
@@ -37,12 +37,12 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
         public ImageSharpResizedImageAssetFileService(
             IFileStoreService fileService,
             IQueryExecutor queryExecutor,
-            IErrorLoggingService errorLoggingService
+            ILogger<ImageSharpResizedImageAssetFileService> logger
             )
         {
             _fileService = fileService;
             _queryExecutor = queryExecutor;
-            _errorLoggingService = errorLoggingService;
+            _logger = logger;
         }
 
         #endregion
@@ -96,7 +96,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                     }
                     else
                     {
-                        _errorLoggingService.Log(ex);
+                        _logger.LogError(0, ex, "Error creating image asset cache file. Container name {ContainerName}, {fullFileName}", IMAGE_ASSET_CACHE_CONTAINER_NAME, fullFileName);
                     }
                 }
 
