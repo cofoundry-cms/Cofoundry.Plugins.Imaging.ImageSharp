@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Net;
 using SixLabors.Primitives;
 using Microsoft.Extensions.Logging;
+using ImageSharp.Formats;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp
 {
@@ -67,10 +68,12 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             else
             {
                 imageStream = new MemoryStream();
+                IImageFormat imageFormat = null;
 
                 using (var originalStream = await GetFileStreamAsync(asset.ImageAssetId))
-                using (var image = Image.Load(originalStream))
+                using (var image = Image.Load(originalStream, out imageFormat))
                 {
+                    if (imageFormat == null) throw new Exception("Unable to determine image type for image asset " + asset.ImageAssetId);
                     var resizeOptions = ConvertSettings(inputSettings);
                     image.Resize(resizeOptions);
 
@@ -80,7 +83,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                         image.BackgroundColor(color);
                     }
 
-                    image.Save(imageStream);
+                    image.Save(imageStream, imageFormat);
                 }
 
                 try

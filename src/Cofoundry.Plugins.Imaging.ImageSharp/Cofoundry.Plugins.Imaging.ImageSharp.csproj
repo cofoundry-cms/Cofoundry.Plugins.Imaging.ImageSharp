@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     
     <PackageId>Cofoundry.Plugins.Imaging.ImageSharp</PackageId>
     <Description>Handle image validation and resizing in Cofoundry using the cross platform ImageSharp library.</Description>
@@ -13,10 +13,14 @@
     <DocumentationFile>bin\Release\netstandard1.6\Cofoundry.Plugins.Imaging.ImageSharp.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>1</WarningLevel>
+  </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Domain" Version="0.2.0-beta0004" />
-    <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00152" />
+    <PackageReference Include="Cofoundry.Domain" Version="0.2.0-beta0054" />
+    <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00194" />
   </ItemGroup>
 
 </Project>

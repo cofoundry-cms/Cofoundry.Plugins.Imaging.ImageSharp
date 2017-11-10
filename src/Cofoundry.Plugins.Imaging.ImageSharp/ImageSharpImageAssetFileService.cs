@@ -46,12 +46,13 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
         public async Task SaveAsync(IUploadedFile uploadedFile, ImageAsset imageAsset, string propertyName)
         {
             Image<Rgba32> imageFile = null;
-
+            IImageFormat imageFormat = null;
+                
             using (var inputSteam = await uploadedFile.OpenReadStreamAsync())
             {
                 try
                 {
-                    imageFile = Image.Load(inputSteam);
+                    imageFile = Image.Load(inputSteam, out imageFormat);
                 }
                 catch (ArgumentException ex)
                 {
@@ -70,12 +71,16 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
 
                 using (imageFile) // validate image file
                 {
+                    if (imageFormat == null) throw new PropertyValidationException("Unable to determine image type.", propertyName);
+
                     var requiredReEncoding = true;
                     var fileExtension = "jpg";
+                    var foundExtension = _permittedImageFileExtensions
+                        .FirstOrDefault(e => imageFormat.FileExtensions.Contains(e));
 
-                    if (_permittedImageFileExtensions.Contains(imageFile.CurrentImageFormat.Extension))
+                    if (foundExtension != null)
                     {
-                        fileExtension = imageFile.CurrentImageFormat.Extension;
+                        fileExtension = foundExtension;
                         requiredReEncoding = false;
                     }
 
@@ -107,7 +112,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                                 }
                                 else
                                 {
-                                    imageFile.Save(outputStream);
+                                    imageFile.Save(outputStream, imageFormat);
                                 }
                                 await CreateFileAsync(isNew, fileName, outputStream);
                                 // recalculate size and save
