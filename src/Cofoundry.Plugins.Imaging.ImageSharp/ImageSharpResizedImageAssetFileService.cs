@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
-using ImageSharp;
-using ImageSharp.Processing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System.Diagnostics;
 using System.Net;
 using SixLabors.Primitives;
 using Microsoft.Extensions.Logging;
-using ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp
 {
@@ -75,13 +75,22 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                 {
                     if (imageFormat == null) throw new Exception("Unable to determine image type for image asset " + asset.ImageAssetId);
                     var resizeOptions = ConvertSettings(inputSettings);
-                    image.Resize(resizeOptions);
-
-                    if (!string.IsNullOrWhiteSpace(inputSettings.BackgroundColor))
+                    image.Mutate(cx => 
                     {
-                        var color = Rgba32.FromHex(inputSettings.BackgroundColor);
-                        image.BackgroundColor(color);
-                    }
+                        cx.Resize(resizeOptions);
+                        
+                        if (!string.IsNullOrWhiteSpace(inputSettings.BackgroundColor))
+                        {
+                            var color = Rgba32.FromHex(inputSettings.BackgroundColor);
+                            cx.BackgroundColor(color);
+                        }
+                        else if (CanPad(resizeOptions) && !SupportsTransparency(imageFormat))
+                        {
+                            // default background for jpg encoder is black, but white is a better default in most scenarios.
+                            cx.BackgroundColor(Rgba32.White);
+                        }
+                    });
+
 
                     image.Save(imageStream, imageFormat);
                 }
@@ -106,6 +115,25 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                 imageStream.Position = 0;
                 return imageStream;
             }
+        }
+
+        private bool CanPad(ResizeOptions resizeOptions)
+        {
+            switch (resizeOptions.Mode)
+            {
+                case ResizeMode.Crop:
+                case ResizeMode.Max:
+                case ResizeMode.Min:
+                case ResizeMode.Stretch:
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool SupportsTransparency(IImageFormat imageFormat)
+        {
+            return imageFormat != ImageFormats.Jpeg && imageFormat != ImageFormats.Png;
         }
 
         public Task ClearAsync(int imageAssetId)
