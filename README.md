@@ -13,6 +13,13 @@ Cofoundry does not have a default image resizing implementation and relies on pl
 
 This plugin uses the cross platform [ImageSharp](https://github.com/JimBobSquarePants/ImageSharp) package to resize images dynamically. 
 
-***NB:** ImageSharp is still in pre-release so this is a quick rough solution to cross platform imaging. The ImageSharp package should be picked up automatically, but if not you can find it in the MyGet feed stored in the NuGet.config file.*
+***NB:** ImageSharp is still in beta so this is a quick rough solution to cross platform imaging.*
 
-The services register themselves automatically so no other configuration is required.
+## Configuration
+
+The services register themselves automatically so typically no other configuration is required. The following configuration settings can be used to tweak the image output:
+
+- **Cofoundry:Plugins:ImageSharp:JpegQuality** Jpeg quality setting out of 100. Defaults to 85.
+- **Cofoundry:Plugins:ImageSharp:JpegQuality** Indicates whether the metadata should be ignored when the image is being encoded.
+
+If you need more control over the image configuration this can be acheived by changing the ImageSharp configuration manually. Check out the  [ChangeDefaultEncoderOptions](https://github.com/SixLabors/ImageSharp/tree/master/samples/ChangeDefaultEncoderOptions) sample for more information. Our default configuration is set during the Cofoundry startup process, so you'll need to apply your settings after you've called `app.UseCofoundry();`.
