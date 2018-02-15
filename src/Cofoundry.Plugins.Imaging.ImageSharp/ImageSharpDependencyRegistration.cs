@@ -13,8 +13,8 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             var overrideOptions = RegistrationOptions.Override();
 
             container
-                .RegisterType<IImageAssetFileService, ImageSharpImageAssetFileService>(overrideOptions)
-                .RegisterType<IResizedImageAssetFileService, ImageSharpResizedImageAssetFileService>(overrideOptions)
+                .Register<IImageAssetFileService, ImageSharpImageAssetFileService>(overrideOptions)
+                .Register<IResizedImageAssetFileService, ImageSharpResizedImageAssetFileService>(overrideOptions)
                 ;
         }
     }

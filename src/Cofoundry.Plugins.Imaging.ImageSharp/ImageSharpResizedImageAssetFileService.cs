@@ -146,7 +146,8 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
 
         private async Task<Stream> GetFileStreamAsync(int imageAssetId)
         {
-            var result = await _queryExecutor.GetByIdAsync<ImageAssetFile>(imageAssetId);
+            var query = new GetImageAssetFileByIdQuery(imageAssetId);
+            var result = await _queryExecutor.ExecuteAsync(query);
 
             if (result == null || result.ContentStream == null)
             {
