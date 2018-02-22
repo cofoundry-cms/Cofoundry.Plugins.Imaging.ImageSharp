@@ -13,7 +13,7 @@ Cofoundry does not have a default image resizing implementation and relies on pl
 
 This plugin uses the cross platform [ImageSharp](https://github.com/JimBobSquarePants/ImageSharp) package to resize images dynamically. 
 
-***NB:** ImageSharp is still in beta so this is a quick rough solution to cross platform imaging.*
+***NB:** ImageSharp is still in beta and so this package is flagged as pre-release. Read the nuget [Installing and updating pre-release packages](https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages#installing-and-updating-pre-release-packages) for guidance on installing if you're not familiar with this process.*
 
 ## Configuration
 

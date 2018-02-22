@@ -123,6 +123,12 @@ Task("PushNuGetPackage")
                 Source = "https://www.myget.org/F/cofoundry/api/v2/package",
                 ApiKey = EnvironmentVariable("MYGET_API_KEY")
             });
+			
+			// While ImageSharp is still in beta, push this to nuget as pre-release
+            NuGetPush(nugets, new NuGetPushSettings {
+                Source = "https://nuget.org/",
+                ApiKey = EnvironmentVariable("NUGET_API_KEY")
+            });
         }
         else
         {
