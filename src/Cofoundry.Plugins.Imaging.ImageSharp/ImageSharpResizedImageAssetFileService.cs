@@ -13,6 +13,9 @@ using System.Net;
 using SixLabors.Primitives;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Processing.Transforms;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing.Overlays;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp
 {
@@ -184,31 +187,31 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             switch (inputSettings.Anchor)
             {
                 case ImageAnchorLocation.BottomCenter:
-                    resizeSettings.Position = AnchorPosition.Bottom;
+                    resizeSettings.Position = AnchorPositionMode.Bottom;
                     break;
                 case ImageAnchorLocation.BottomLeft:
-                    resizeSettings.Position = AnchorPosition.BottomLeft;
+                    resizeSettings.Position = AnchorPositionMode.BottomLeft;
                     break;
                 case ImageAnchorLocation.BottomRight:
-                    resizeSettings.Position = AnchorPosition.BottomRight;
+                    resizeSettings.Position = AnchorPositionMode.BottomRight;
                     break;
                 case ImageAnchorLocation.MiddleCenter:
-                    resizeSettings.Position = AnchorPosition.Center;
+                    resizeSettings.Position = AnchorPositionMode.Center;
                     break;
                 case ImageAnchorLocation.MiddleLeft:
-                    resizeSettings.Position = AnchorPosition.Left;
+                    resizeSettings.Position = AnchorPositionMode.Left;
                     break;
                 case ImageAnchorLocation.MiddleRight:
-                    resizeSettings.Position = AnchorPosition.Right;
+                    resizeSettings.Position = AnchorPositionMode.Right;
                     break;
                 case ImageAnchorLocation.TopCenter:
-                    resizeSettings.Position = AnchorPosition.Top;
+                    resizeSettings.Position = AnchorPositionMode.Top;
                     break;
                 case ImageAnchorLocation.TopLeft:
-                    resizeSettings.Position = AnchorPosition.TopLeft;
+                    resizeSettings.Position = AnchorPositionMode.TopLeft;
                     break;
                 case ImageAnchorLocation.TopRight:
-                    resizeSettings.Position = AnchorPosition.TopRight;
+                    resizeSettings.Position = AnchorPositionMode.TopRight;
                     break;
                 default:
                     throw new NotSupportedException("ImageAnchorLocation not supported: " + inputSettings.Anchor);

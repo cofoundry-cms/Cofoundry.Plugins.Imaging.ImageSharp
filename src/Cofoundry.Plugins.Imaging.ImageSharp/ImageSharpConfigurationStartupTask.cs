@@ -27,16 +27,12 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
         {
             // Setup some initial config
             var imgConfig = SixLabors.ImageSharp.Configuration.Default;
-            imgConfig.SetEncoder(ImageFormats.Jpeg, new JpegEncoder()
+            imgConfig.ImageFormatsManager.SetEncoder(ImageFormats.Jpeg, new JpegEncoder()
             {
                 Quality = _imageSharpSettings.JpegQuality,
                 IgnoreMetadata = _imageSharpSettings.IgnoreMetadata
             });
-            imgConfig.SetEncoder(ImageFormats.Png, new PngEncoder()
-            {
-                IgnoreMetadata = _imageSharpSettings.IgnoreMetadata
-            });
-            imgConfig.SetEncoder(ImageFormats.Gif, new GifEncoder()
+            imgConfig.ImageFormatsManager.SetEncoder(ImageFormats.Gif, new GifEncoder()
             {
                 IgnoreMetadata = _imageSharpSettings.IgnoreMetadata
             });
