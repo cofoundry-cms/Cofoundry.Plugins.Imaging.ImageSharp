@@ -1,4 +1,5 @@
-﻿using Cofoundry.Core.EntityFramework;
+﻿using Cofoundry.Core.Data;
+using Cofoundry.Core.EntityFramework;
 using Cofoundry.Core.Validation;
 using Cofoundry.Domain;
 using Cofoundry.Domain.Data;
@@ -30,17 +31,17 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
 
         private readonly CofoundryDbContext _dbContext;
         private readonly IFileStoreService _fileStoreService;
-        private readonly ITransactionScopeFactory _transactionScopeFactory;
+        private readonly ITransactionScopeManager _transactionScopeManager;
 
         public ImageSharpImageAssetFileService(
             CofoundryDbContext dbContext,
             IFileStoreService fileStoreService,
-            ITransactionScopeFactory transactionScopeFactory
+            ITransactionScopeManager transactionScopeManager
             )
         {
             _dbContext = dbContext;
             _fileStoreService = fileStoreService;
-            _transactionScopeFactory = transactionScopeFactory;
+            _transactionScopeManager = transactionScopeManager;
         }
 
         #endregion
@@ -99,7 +100,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                         await _dbContext.SaveChangesAsync();
                     }
 
-                    using (var scope = _transactionScopeFactory.Create(_dbContext))
+                    using (var scope = _transactionScopeManager.Create(_dbContext))
                     {
                         var fileName = Path.ChangeExtension(imageAsset.ImageAssetId.ToString(), imageAsset.Extension);
 
@@ -128,7 +129,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                             await CreateFileAsync(isNew, fileName, inputSteam);
                         }
 
-                        scope.Complete();
+                        await scope.CompleteAsync();
                     };
                 }
             }

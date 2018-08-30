@@ -13,9 +13,7 @@ using System.Net;
 using SixLabors.Primitives;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Processing.Transforms;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing.Overlays;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp
 {
