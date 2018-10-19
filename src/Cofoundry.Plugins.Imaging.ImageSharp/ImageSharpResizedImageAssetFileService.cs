@@ -26,10 +26,9 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
 
         internal static readonly string IMAGE_ASSET_CACHE_CONTAINER_NAME = "ImageAssetCache";
 
-        private const int MAX_IMG_SIZE = 3200;
-
         private readonly IFileStoreService _fileService;
         private readonly IQueryExecutor _queryExecutor;
+        private readonly ImageAssetsSettings _imageAssetsSettings;
         private readonly ILogger<ImageSharpResizedImageAssetFileService> _logger;
 
         #endregion
@@ -39,12 +38,14 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
         public ImageSharpResizedImageAssetFileService(
             IFileStoreService fileService,
             IQueryExecutor queryExecutor,
+            ImageAssetsSettings imageAssetsSettings,
             ILogger<ImageSharpResizedImageAssetFileService> logger
             )
         {
             _fileService = fileService;
             _queryExecutor = queryExecutor;
             _logger = logger;
+            _imageAssetsSettings = imageAssetsSettings;
         }
 
         #endregion
@@ -56,9 +57,13 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             {
                 return await GetFileStreamAsync(asset.ImageAssetId);
             }
-            
-            var directory = asset.ImageAssetId.ToString();
-            var fullFileName = directory + "/" + CreateCacheFileName(inputSettings, asset);
+
+            if (_imageAssetsSettings.DisableResizing)
+            {
+                throw new InvalidImageResizeSettingsException("Image resizing has been requested but is disabled.", inputSettings);
+            }
+
+            var fullFileName = asset.FileNameOnDisk + "/" + CreateCacheFileName(inputSettings, asset);
             Stream imageStream = null;
             ValidateSettings(inputSettings);
 
@@ -76,10 +81,10 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                 {
                     if (imageFormat == null) throw new Exception("Unable to determine image type for image asset " + asset.ImageAssetId);
                     var resizeOptions = ConvertSettings(inputSettings);
-                    image.Mutate(cx => 
+                    image.Mutate(cx =>
                     {
                         cx.Resize(resizeOptions);
-                        
+
                         if (!string.IsNullOrWhiteSpace(inputSettings.BackgroundColor))
                         {
                             var color = Rgba32.FromHex(inputSettings.BackgroundColor);
@@ -137,10 +142,9 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             return imageFormat != ImageFormats.Jpeg && imageFormat != ImageFormats.Png;
         }
 
-        public Task ClearAsync(int imageAssetId)
+        public Task ClearAsync(string fileNameOnDisk)
         {
-            var directory = imageAssetId.ToString();
-            return _fileService.DeleteDirectoryAsync(IMAGE_ASSET_CACHE_CONTAINER_NAME, directory);
+            return _fileService.DeleteDirectoryAsync(IMAGE_ASSET_CACHE_CONTAINER_NAME, fileNameOnDisk);
         }
 
         #region private methods
@@ -223,8 +227,15 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             // Scale mode not supported yet
             settings.Scale = ImageScaleMode.Both;
 
-            if (settings.Width > MAX_IMG_SIZE) settings.Width = MAX_IMG_SIZE;
-            if (settings.Height > MAX_IMG_SIZE) settings.Height = MAX_IMG_SIZE;
+            if (settings.Width > _imageAssetsSettings.MaxResizeWidth)
+            {
+                throw new InvalidImageResizeSettingsException($"Requested image width exceeds the maximum permitted value of {_imageAssetsSettings.MaxResizeWidth} pixels");
+            }
+
+            if (settings.Height > _imageAssetsSettings.MaxResizeHeight)
+            {
+                throw new InvalidImageResizeSettingsException($"Requested image height exceeds the maximum permitted value of {_imageAssetsSettings.MaxResizeHeight} pixels");
+            }
         }
 
         private string CreateCacheFileName(IImageResizeSettings settings, IImageAssetRenderable asset)
@@ -233,7 +244,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             string s = string.Format(format, settings.Width, settings.Height, settings.Mode, settings.Scale, settings.BackgroundColor, settings.Anchor);
             s = WebUtility.UrlEncode(s);
 
-            return Path.ChangeExtension(s, asset.Extension);
+            return Path.ChangeExtension(s, asset.FileExtension);
         }
 
         #endregion
