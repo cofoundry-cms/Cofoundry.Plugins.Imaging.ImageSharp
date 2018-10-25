@@ -19,7 +19,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web" Version="0.5.0-beta0023" />
+    <PackageReference Include="Cofoundry.Web" Version="0.5.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
   </ItemGroup>
 
