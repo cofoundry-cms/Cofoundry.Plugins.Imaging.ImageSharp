@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.6\Cofoundry.Plugins.Imaging.ImageSharp.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.0\Cofoundry.Plugins.Imaging.ImageSharp.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web" Version="0.5.0" />
+    <PackageReference Include="Cofoundry.Web" Version="0.6.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
   </ItemGroup>
 
