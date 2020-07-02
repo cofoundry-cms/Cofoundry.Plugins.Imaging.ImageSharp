@@ -55,7 +55,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             string propertyName
             )
         {
-            Image<Rgba32> imageFile = null;
+            Image imageFile = null;
             IImageFormat imageFormat = null;
 
             using (var inputSteam = await uploadedFile.OpenReadStreamAsync())
@@ -138,7 +138,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
 
         private void ValidateImage(
             string propertyName,
-            Image<Rgba32> imageFile,
+            Image imageFile,
             IImageFormat imageFormat
             )
         {
