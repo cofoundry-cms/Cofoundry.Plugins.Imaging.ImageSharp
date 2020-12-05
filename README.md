@@ -4,16 +4,23 @@
 [![NuGet](https://img.shields.io/nuget/v/Cofoundry.Plugins.Imaging.ImageSharp.svg)](https://www.nuget.org/packages/Cofoundry.Plugins.Imaging.ImageSharp/)
 [![Gitter](https://img.shields.io/gitter/room/cofoundry-cms/cofoundry.svg)](https://gitter.im/cofoundry-cms/cofoundry)
 
-
 This library is a plugin for [Cofoundry](https://www.cofoundry.org). For more information on getting started with Cofoundry check out the [Cofoundry repository](https://github.com/cofoundry-cms/cofoundry).
 
 ## Overview
 
 Cofoundry does not have a default image resizing implementation and relies on plugins to add this functionality. For more info on image resizing in Cofoundry check out the [imaging documentation](https://github.com/cofoundry-cms/cofoundry/wiki/Images). 
 
-This plugin uses the cross platform [ImageSharp](https://github.com/JimBobSquarePants/ImageSharp) package to resize images dynamically. 
+This plugin uses the cross platform [ImageSharp](https://github.com/JimBobSquarePants/ImageSharp) package to resize images dynamically.
 
-***NB:** ImageSharp is still in beta and so this package is flagged as pre-release. Read the nuget [Installing and updating pre-release packages](https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages#installing-and-updating-pre-release-packages) for guidance on installing if you're not familiar with this process.*
+ImageSharp has a number of benefits over our  SkiaSharp imaging package:
+
+- Support for (animated) gifs
+- An extensive range of configuration options
+- The ability to preserve EXIF data
+- Fully cross-platform
+- A commercial support model
+
+If you're using this library we'd recommend supporting their excellent library by buying a [licence](https://sixlabors.com/pricing) where possible.
 
 ## Configuration
 
