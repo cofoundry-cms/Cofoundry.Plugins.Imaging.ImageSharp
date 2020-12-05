@@ -12,7 +12,7 @@ Cofoundry does not have a default image resizing implementation and relies on pl
 
 This plugin uses the cross platform [ImageSharp](https://github.com/JimBobSquarePants/ImageSharp) package to resize images dynamically.
 
-ImageSharp has a number of benefits over our  SkiaSharp imaging package:
+ImageSharp has a number of benefits over our  [SkiaSharp imaging package](https://github.com/cofoundry-cms/Cofoundry.Plugins.Imaging.SkiaSharp):
 
 - Support for (animated) gifs
 - An extensive range of configuration options
@@ -20,7 +20,7 @@ ImageSharp has a number of benefits over our  SkiaSharp imaging package:
 - Fully cross-platform
 - A commercial support model
 
-If you're using this library we'd recommend supporting their excellent library by buying a [licence](https://sixlabors.com/pricing) where possible.
+If you're using this plugin we'd recommend supporting their excellent library by buying a [licence](https://sixlabors.com/pricing) where possible.
 
 ## Configuration
 
