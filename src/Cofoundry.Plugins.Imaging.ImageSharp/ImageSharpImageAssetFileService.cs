@@ -1,17 +1,14 @@
 ﻿using Cofoundry.Core.Data;
-using Cofoundry.Core.EntityFramework;
 using Cofoundry.Core.Validation;
 using Cofoundry.Domain;
 using Cofoundry.Domain.Data;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp
@@ -26,8 +23,6 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             "png",
             "gif"
         };
-
-        #region constructor
 
         private readonly CofoundryDbContext _dbContext;
         private readonly IFileStoreService _fileStoreService;
@@ -47,10 +42,8 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             _imageAssetsSettings = imageAssetsSettings;
         }
 
-        #endregion
-
         public async Task SaveAsync(
-            IUploadedFile uploadedFile,
+            IFileSource fileSource,
             ImageAsset imageAsset,
             string propertyName
             )
@@ -58,7 +51,7 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
             Image imageFile = null;
             IImageFormat imageFormat = null;
 
-            using (var inputSteam = await uploadedFile.OpenReadStreamAsync())
+            using (var inputSteam = await fileSource.OpenReadStreamAsync())
             {
                 try
                 {
@@ -69,9 +62,9 @@ namespace Cofoundry.Plugins.Imaging.ImageSharp
                     // We'll get an argument exception if the image file is invalid
                     // so lets check to see if we can identify if it is an invalid file type and show that error
                     // This might not always be the case since a file extension or mime type might not be supplied.
-                    var ext = Path.GetExtension(uploadedFile.FileName);
+                    var ext = Path.GetExtension(fileSource.FileName);
                     if ((!string.IsNullOrEmpty(ext) && !ImageAssetConstants.PermittedImageTypes.ContainsKey(ext))
-                        || (!string.IsNullOrEmpty(uploadedFile.MimeType) && !ImageAssetConstants.PermittedImageTypes.ContainsValue(uploadedFile.MimeType)))
+                        || (!string.IsNullOrEmpty(fileSource.MimeType) && !ImageAssetConstants.PermittedImageTypes.ContainsValue(fileSource.MimeType)))
                     {
                         throw new PropertyValidationException("The file is not a supported image type.", propertyName);
                     }
