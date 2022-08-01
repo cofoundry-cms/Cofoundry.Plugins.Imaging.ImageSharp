@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
     
     <PackageId>Cofoundry.Plugins.Imaging.ImageSharp</PackageId>
     <Description>Handle image validation and resizing in Cofoundry using the cross platform ImageSharp library.</Description>
@@ -15,7 +16,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp3.1\Cofoundry.Plugins.Imaging.ImageSharp.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net6.0\Cofoundry.Plugins.Imaging.ImageSharp.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 
@@ -24,7 +25,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web" Version="0.10.0" />
+    <PackageReference Include="Cofoundry.Web" Version="0.10.4-ci0006" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
   </ItemGroup>
 

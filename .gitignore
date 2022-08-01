@@ -96,7 +96,7 @@ Desktop.ini
 # Mac crap
 .DS_Store
 
-src/.vs
+.vs
 .vscode
 
 # Cake Build
