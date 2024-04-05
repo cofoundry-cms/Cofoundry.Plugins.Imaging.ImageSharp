@@ -1,5 +1,5 @@
-﻿using Cofoundry.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
+using Cofoundry.Core.Configuration;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp;
 
@@ -14,14 +14,13 @@ public class ImageSharpSettings : PluginConfigurationSettingsBase
     public ImageSharpSettings()
     {
         IgnoreMetadata = true;
-        JpegQuality = 85;
     }
 
     /// <summary>
     /// Jpeg quality setting out of 100. Defaults to 85.
     /// </summary>
     [Range(0, 100)]
-    public int JpegQuality { get; set; }
+    public int JpegQuality { get; set; } = 85;
 
     /// <summary>
     /// Indicates whether the metadata should be ignored when the

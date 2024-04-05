@@ -1,75 +1,92 @@
-﻿using Cofoundry.Core.Data;
+using System.Diagnostics.CodeAnalysis;
+using Cofoundry.Core.Data;
 using Cofoundry.Core.Validation;
 using Cofoundry.Domain;
 using Cofoundry.Domain.Data;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp;
 
+/// <summary>
+/// ImageSharp implementation of <see cref="IImageAssetFileService"/>.
+/// </summary>
 public class ImageSharpImageAssetFileService : IImageAssetFileService
 {
     private const string ASSET_FILE_CONTAINER_NAME = "Images";
 
-    private static readonly HashSet<string> _permittedImageFileExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+    private static readonly HashSet<string> _permittedImageFileExtensions = new(StringComparer.OrdinalIgnoreCase) {
         "jpg",
         "jpeg",
         "png",
-        "gif"
+        "gif",
+        "webp"
     };
 
     private readonly CofoundryDbContext _dbContext;
     private readonly IFileStoreService _fileStoreService;
     private readonly ITransactionScopeManager _transactionScopeManager;
     private readonly ImageAssetsSettings _imageAssetsSettings;
+    private readonly ILogger<ImageSharpImageAssetFileService> _logger;
 
     public ImageSharpImageAssetFileService(
         CofoundryDbContext dbContext,
         IFileStoreService fileStoreService,
         ITransactionScopeManager transactionScopeManager,
-        ImageAssetsSettings imageAssetsSettings
+        ImageAssetsSettings imageAssetsSettings,
+        ILogger<ImageSharpImageAssetFileService> logger
         )
     {
         _dbContext = dbContext;
         _fileStoreService = fileStoreService;
         _transactionScopeManager = transactionScopeManager;
         _imageAssetsSettings = imageAssetsSettings;
+        _logger = logger;
     }
 
+    /// <inheritdoc/>
     public async Task SaveAsync(
-        IFileSource fileSource,
+        IFileSource fileToSave,
         ImageAsset imageAsset,
-        string propertyName
+        string validationErrorPropertyName
         )
     {
-        Image imageFile = null;
-        IImageFormat imageFormat = null;
+        Image? imageFile = null;
+        IImageFormat? imageFormat = null;
 
-        using (var inputSteam = await fileSource.OpenReadStreamAsync())
+        using (var inputSteam = await fileToSave.OpenReadStreamAsync())
         {
             try
             {
-                imageFile = Image.Load(inputSteam, out imageFormat);
+                imageFile = Image.Load(inputSteam);
+                imageFormat = imageFile.Metadata.DecodedImageFormat;
             }
-            catch (ArgumentException ex)
+            catch (InvalidImageContentException ex)
             {
-                // We'll get an argument exception if the image file is invalid
+                throw ValidationErrorException.CreateWithProperties("The file content is not valid.", validationErrorPropertyName);
+                _logger.LogInformation(ex, "Image content error for file '{FileName}' with mime type {MimeType}.", fileToSave.FileName, fileToSave.MimeType);
+            }
+            catch (Exception ex) when (ex is NotSupportedException or ImageFormatException)
+            {
+                // We'll get an exception if the image file is invalid
                 // so lets check to see if we can identify if it is an invalid file type and show that error
                 // This might not always be the case since a file extension or mime type might not be supplied.
-                var ext = Path.GetExtension(fileSource.FileName);
+                var ext = Path.GetExtension(fileToSave.FileName);
                 if ((!string.IsNullOrEmpty(ext) && !ImageAssetConstants.PermittedImageTypes.ContainsKey(ext))
-                    || (!string.IsNullOrEmpty(fileSource.MimeType) && !ImageAssetConstants.PermittedImageTypes.ContainsValue(fileSource.MimeType)))
+                    || (!string.IsNullOrEmpty(fileToSave.MimeType) && !ImageAssetConstants.PermittedImageTypes.ContainsValue(fileToSave.MimeType)))
                 {
-                    throw ValidationErrorException.CreateWithProperties("The file is not a supported image type.", propertyName);
+                    throw ValidationErrorException.CreateWithProperties("The file is not a supported image type.", validationErrorPropertyName);
                 }
 
-                throw;
+                _logger.LogInformation(ex, "Image format error for file '{FileName}' with mime type {MimeType}.", fileToSave.FileName, fileToSave.MimeType);
+                throw ValidationErrorException.CreateWithProperties("The file is not valid.", validationErrorPropertyName);
             }
 
             using (imageFile) // validate image file
             {
-                ValidateImage(propertyName, imageFile, imageFormat);
+                ValidateImage(validationErrorPropertyName, imageFile, imageFormat);
 
                 var requiredReEncoding = true;
                 var fileExtension = "jpg";
@@ -127,7 +144,7 @@ public class ImageSharpImageAssetFileService : IImageAssetFileService
     private void ValidateImage(
         string propertyName,
         Image imageFile,
-        IImageFormat imageFormat
+        [NotNull] IImageFormat? imageFormat
         )
     {
         if (imageFormat == null)

@@ -1,10 +1,14 @@
-﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace Cofoundry.Plugins.Imaging.ImageSharp;
 
+/// <summary>
+/// Default implementation of <see cref="IImageAssetFileService"/>.
+/// </summary>
 public class DefaultImageSharpInitializer : IImageSharpInitializer
 {
     private readonly ImageSharpSettings _imageSharpSettings;
@@ -16,26 +20,28 @@ public class DefaultImageSharpInitializer : IImageSharpInitializer
         _imageSharpSettings = imageSharpSettings;
     }
 
+    /// <inheritdoc/>
     public void Initialize(Configuration configuration)
     {
-        configuration.ImageFormatsManager.SetDecoder(JpegFormat.Instance, new JpegDecoder()
-        {
-            IgnoreMetadata = _imageSharpSettings.IgnoreMetadata
-        });
-
         configuration.ImageFormatsManager.SetEncoder(JpegFormat.Instance, new JpegEncoder()
         {
-            Quality = _imageSharpSettings.JpegQuality
+            Quality = _imageSharpSettings.JpegQuality,
+            SkipMetadata = _imageSharpSettings.IgnoreMetadata
         });
 
-        configuration.ImageFormatsManager.SetDecoder(GifFormat.Instance, new GifDecoder()
+        configuration.ImageFormatsManager.SetEncoder(GifFormat.Instance, new GifEncoder()
         {
-            IgnoreMetadata = _imageSharpSettings.IgnoreMetadata
+            SkipMetadata = _imageSharpSettings.IgnoreMetadata
         });
 
-        configuration.ImageFormatsManager.SetDecoder(PngFormat.Instance, new PngDecoder()
+        configuration.ImageFormatsManager.SetEncoder(PngFormat.Instance, new PngEncoder()
         {
-            IgnoreMetadata = _imageSharpSettings.IgnoreMetadata
+            SkipMetadata = _imageSharpSettings.IgnoreMetadata,
+        });
+
+        configuration.ImageFormatsManager.SetEncoder(WebpFormat.Instance, new WebpEncoder()
+        {
+            SkipMetadata = _imageSharpSettings.IgnoreMetadata,
         });
     }
 }
