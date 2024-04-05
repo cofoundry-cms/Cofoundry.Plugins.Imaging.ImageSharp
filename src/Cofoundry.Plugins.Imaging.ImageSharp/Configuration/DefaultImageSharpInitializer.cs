@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Formats.Webp;
 namespace Cofoundry.Plugins.Imaging.ImageSharp;
 
 /// <summary>
-/// Default implementation of <see cref="IImageAssetFileService"/>.
+/// Default implementation of <see cref="IImageSharpInitializer"/>.
 /// </summary>
 public class DefaultImageSharpInitializer : IImageSharpInitializer
 {

@@ -65,8 +65,8 @@ public class ImageSharpImageAssetFileService : IImageAssetFileService
             }
             catch (InvalidImageContentException ex)
             {
-                throw ValidationErrorException.CreateWithProperties("The file content is not valid.", validationErrorPropertyName);
                 _logger.LogInformation(ex, "Image content error for file '{FileName}' with mime type {MimeType}.", fileToSave.FileName, fileToSave.MimeType);
+                throw ValidationErrorException.CreateWithProperties("The file content is not valid.", validationErrorPropertyName);
             }
             catch (Exception ex) when (ex is NotSupportedException or ImageFormatException)
             {
